@@ -1,20 +1,22 @@
 //  Copyright (c) 2015 Felix Jendrusch. All rights reserved.
 
-import Result
+import Lustre
 
 public protocol ReversibleValueTransformerType: ValueTransformerType {
-    func reverseTransform(transformedValue: TransformedValueType) -> Result<ValueType, ErrorType>
+    typealias ReverseTransformResult: ResultType
+    
+    func reverseTransform(transformedValue: TransformResult.Value) -> ReverseTransformResult
 }
 
 // MARK: - Basics
 
 @availability(*, introduced=1.0, deprecated=2.1, message="Use valueTransformer.reverseTransform(transformedValue).")
-public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V, transformedValue: V.TransformedValueType) -> Result<V.ValueType, V.ErrorType> {
+public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V, transformedValue: V.TransformResult.Value) -> V.ReverseTransformResult {
     return reversibleValueTransformer.reverseTransform(transformedValue)
 }
 
-public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> V.TransformedValueType -> Result<V.ValueType, V.ErrorType> {
+public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> V.TransformResult.Value -> V.ReverseTransformResult {
     return { transformedValue in
-        return reversibleValueTransformer.reverseTransform(transformedValue)
+        reversibleValueTransformer.reverseTransform(transformedValue)
     }
 }

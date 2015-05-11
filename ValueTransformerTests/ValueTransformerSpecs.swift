@@ -3,20 +3,20 @@
 import Quick
 import Nimble
 
-import Result
+import Lustre
 import ValueTransformer
 
 struct ValueTransformers {
-    static let string = ValueTransformer<String, Int, NSError> { value in
+    static let string = ValueTransformer<String, AnyResult<Int>> { value in
         if let value = value.toInt() {
-            return Result.success(value)
+            return success(value)
         } else {
-            return Result.failure(NSError())
+            return failure(NSError())
         }
     }
 
-    static let int = ValueTransformer<Int, String, NSError> { value in
-        return Result.success(String(value))
+    static let int = ValueTransformer<Int, AnyResult<String>> { value in
+        return success(String(value))
     }
 }
 
@@ -56,7 +56,7 @@ class ValueTransformerSpecs: QuickSpec {
 
         describe("Lifted value transformers") {
             context("with optional value") {
-                let valueTransformer: ValueTransformer<String?, Int, NSError> = lift(ValueTransformers.string, defaultTransformedValue: 0)
+                let valueTransformer: ValueTransformer<String?, AnyResult<Int>> = lift(ValueTransformers.string, defaultTransformedValue: 0)
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -82,7 +82,7 @@ class ValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional transformed value") {
-                let valueTransformer: ValueTransformer<String, Int?, NSError> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<String, AnyResult<Int?>> = lift(ValueTransformers.string)
 
                 it("should transform a value") {
                     let result = valueTransformer.transform("5")
@@ -98,7 +98,7 @@ class ValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional value and transformed value") {
-                let valueTransformer: ValueTransformer<String?, Int?, NSError> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<String?, AnyResult<Int?>> = lift(ValueTransformers.string)
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -124,7 +124,7 @@ class ValueTransformerSpecs: QuickSpec {
             }
 
             context("with array value and transformed value") {
-                let valueTransformer: ValueTransformer<[String], [Int], NSError> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<[String], AnyResult<[Int]>> = lift(ValueTransformers.string)
 
                 it("should transform a value") {
                     let result = valueTransformer.transform([ "7", "8" ])
