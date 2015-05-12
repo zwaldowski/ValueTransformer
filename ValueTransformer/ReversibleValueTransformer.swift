@@ -2,7 +2,7 @@
 
 import Lustre
 
-public struct ReversibleValueTransformer<Value, Result: ResultType, ReverseResult: ResultType>: ReversibleValueTransformerType {
+public struct ReversibleValueTransformer<Value, Result: ResultType, ReverseResult: ResultType where Value == ReverseResult.Value>: ReversibleValueTransformerType {
     private let transformClosure: Value -> Result
     private let reverseTransformClosure: Result.Value -> ReverseResult
 
