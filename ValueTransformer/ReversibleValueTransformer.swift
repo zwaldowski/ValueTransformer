@@ -5,7 +5,6 @@ import Lustre
 public struct ReversibleValueTransformer<ForwardResult: ResultType, ReverseResult: ResultType>: ReversibleValueTransformerType {
     public typealias ForwardInput = ReverseResult.Value
     public typealias ReverseInput = ForwardResult.Value
-    public typealias Input = ForwardInput
     
     private let transformClosure: ForwardInput -> ForwardResult
     private let reverseTransformClosure: ReverseInput -> ReverseResult
@@ -14,22 +13,16 @@ public struct ReversibleValueTransformer<ForwardResult: ResultType, ReverseResul
         self.transformClosure = transformClosure
         self.reverseTransformClosure = reverseTransformClosure
     }
-
+    
     public func transform(value: ForwardInput) -> ForwardResult {
+        return transformClosure(value)
+    }
+    
+    public func forwardTransform(value: ForwardInput) -> ForwardResult {
         return transformClosure(value)
     }
 
     public func reverseTransform(transformedValue: ReverseInput) -> ReverseResult {
         return reverseTransformClosure(transformedValue)
-    }
-}
-
-extension ReversibleValueTransformer {
-    public init<V: ReversibleValueTransformerType where V.ReverseTransformResult.Value == V.Input, V.Input == ForwardInput, V.TransformResult.Value == ReverseInput>(_ reversibleValueTransformer: V) {
-        self.init(transformClosure: { value in
-            reversibleValueTransformer.transform(value).map { $0 }
-        }, reverseTransformClosure: { transformedValue in
-            reversibleValueTransformer.reverseTransform(transformedValue).map { $0 }
-        })
     }
 }

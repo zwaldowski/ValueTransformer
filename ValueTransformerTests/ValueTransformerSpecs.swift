@@ -82,7 +82,7 @@ class ValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional transformed value") {
-                let valueTransformer: ValueTransformer<String, AnyResult<Int?>> = lift(toOptional: ValueTransformers.string)
+                let valueTransformer = lift(toOptional: ValueTransformers.string)
 
                 it("should transform a value") {
                     let result = valueTransformer.transform("5")

@@ -2,16 +2,27 @@
 
 import Lustre
 
-public protocol ReversibleValueTransformerType: ValueTransformerType {
+public protocol ReversibleValueTransformerType {
+    typealias ForwardTransformResult: ResultType
     typealias ReverseTransformResult: ResultType
-    typealias Input = ReverseTransformResult.Value
     
-    func reverseTransform(transformedValue: TransformResult.Value) -> ReverseTransformResult
+    func forwardTransform(transformedValue: ReverseTransformResult.Value) -> ForwardTransformResult
+    func reverseTransform(transformedValue: ForwardTransformResult.Value) -> ReverseTransformResult
 }
 
 // MARK: - Basics
 
-public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> V.TransformResult.Value -> V.ReverseTransformResult {
+public func forward<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> ValueTransformer<V.ReverseTransformResult.Value, V.ForwardTransformResult> {
+    return ValueTransformer(transformClosure: forwardTransform(reversibleValueTransformer))
+}
+
+public func forwardTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> V.ReverseTransformResult.Value -> V.ForwardTransformResult {
+    return { transformedValue in
+        reversibleValueTransformer.forwardTransform(transformedValue)
+    }
+}
+
+public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> V.ForwardTransformResult.Value -> V.ReverseTransformResult {
     return { transformedValue in
         reversibleValueTransformer.reverseTransform(transformedValue)
     }

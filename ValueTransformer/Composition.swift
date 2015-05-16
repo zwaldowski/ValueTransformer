@@ -2,6 +2,18 @@
 
 import Lustre
 
+// MARK: - Operators
+
+infix operator >>> {
+    associativity right
+    precedence 170
+}
+
+infix operator <<< {
+    associativity right
+    precedence 170
+}
+
 // MARK: - Combine
 
 public func combine<V: ValueTransformerType, W: ValueTransformerType where V.Input == W.TransformResult.Value, V.TransformResult.Value == W.Input>(valueTransformer: V, reverseValueTransformer: W) -> ReversibleValueTransformer<V.TransformResult, W.TransformResult> {
@@ -10,45 +22,35 @@ public func combine<V: ValueTransformerType, W: ValueTransformerType where V.Inp
 
 // MARK: - Flip
 
-public func flip<V: ReversibleValueTransformerType where V.Input == V.ReverseTransformResult.Value>(reversibleValueTransformer: V) -> ReversibleValueTransformer<V.ReverseTransformResult, V.TransformResult> {
-    return ReversibleValueTransformer(transformClosure: reverseTransform(reversibleValueTransformer), reverseTransformClosure: transform(reversibleValueTransformer))
+public func flip<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> ReversibleValueTransformer<V.ReverseTransformResult, V.ForwardTransformResult> {
+    return ReversibleValueTransformer(transformClosure: reverseTransform(reversibleValueTransformer), reverseTransformClosure: forwardTransform(reversibleValueTransformer))
 }
 
 // MARK: - Compose
 
 public func compose<V: ValueTransformerType, W: ValueTransformerType where V.TransformResult.Value == W.Input>(left: V, right: W) -> ValueTransformer<V.Input, W.TransformResult> {
-    return ValueTransformer { value in
-        left.transform(value).flatMap(transform(right))
+    return ValueTransformer {
+        left.transform($0).flatMap(transform(right))
     }
 }
 
-public func compose<V: ReversibleValueTransformerType, W: ReversibleValueTransformerType where V.Input == V.ReverseTransformResult.Value, W.Input == W.ReverseTransformResult.Value, V.TransformResult.Value == W.ReverseTransformResult.Value>(left: V, right: W) -> ReversibleValueTransformer<W.TransformResult, V.ReverseTransformResult> {
-    return combine(left >>> right as ValueTransformer, flip(right) >>> flip(left) as ValueTransformer)
-}
-
-infix operator >>> {
-    associativity right
-    precedence 170
+public func compose<V: ReversibleValueTransformerType, W: ReversibleValueTransformerType where V.ForwardTransformResult.Value == W.ReverseTransformResult.Value>(left: V, right: W) -> ReversibleValueTransformer<W.ForwardTransformResult, V.ReverseTransformResult> {
+    return combine(forward(left) >>> forward(right), forward(flip(right)) >>> forward(flip(left)))
 }
 
 public func >>> <V: ValueTransformerType, W: ValueTransformerType where V.TransformResult.Value == W.Input>(lhs: V, rhs: W) -> ValueTransformer<V.Input, W.TransformResult> {
     return compose(lhs, rhs)
 }
 
-public func >>> <V: ReversibleValueTransformerType, W: ReversibleValueTransformerType where V.Input == V.ReverseTransformResult.Value, W.Input == W.ReverseTransformResult.Value, V.TransformResult.Value == W.ReverseTransformResult.Value>(lhs: V, rhs: W) -> ReversibleValueTransformer<W.TransformResult, V.ReverseTransformResult> {
+public func >>> <V: ReversibleValueTransformerType, W: ReversibleValueTransformerType where V.ForwardTransformResult.Value == W.ReverseTransformResult.Value>(lhs: V, rhs: W) -> ReversibleValueTransformer<W.ForwardTransformResult, V.ReverseTransformResult> {
     return compose(lhs, rhs)
-}
-
-infix operator <<< {
-    associativity right
-    precedence 170
 }
 
 public func <<< <V: ValueTransformerType, W: ValueTransformerType where V.Input == W.TransformResult.Value>(lhs: V, rhs: W) -> ValueTransformer<W.Input, V.TransformResult> {
     return compose(rhs, lhs)
 }
 
-public func <<< <V: ReversibleValueTransformerType, W: ReversibleValueTransformerType where W.Input == W.ReverseTransformResult.Value, V.Input == V.ReverseTransformResult.Value, V.ReverseTransformResult.Value == W.TransformResult.Value>(lhs: V, rhs: W) -> ReversibleValueTransformer<V.TransformResult, W.ReverseTransformResult> {
+public func <<< <V: ReversibleValueTransformerType, W: ReversibleValueTransformerType where W.ForwardTransformResult.Value == V.ReverseTransformResult.Value>(lhs: V, rhs: W) -> ReversibleValueTransformer<V.ForwardTransformResult, W.ReverseTransformResult> {
     return compose(rhs, lhs)
 }
 
@@ -70,16 +72,16 @@ public func lift<V: ValueTransformerType>(optionals valueTransformer: V) -> Valu
     return lift(fromOptional: lift(toOptional: valueTransformer), defaultTransformedValue: nil)
 }
 
-public func lift<V: ReversibleValueTransformerType where V.Input == V.ReverseTransformResult.Value>(fromOptional reversibleValueTransformer: V, #defaultReverseTransformedValue: V.Input) -> ReversibleValueTransformer<AnyResult<V.TransformResult.Value?>, V.ReverseTransformResult> {
-    return combine(lift(toOptional: reversibleValueTransformer) as ValueTransformer, lift(fromOptional: flip(reversibleValueTransformer), defaultTransformedValue: defaultReverseTransformedValue) as ValueTransformer)
+public func lift<V: ReversibleValueTransformerType>(fromOptional reversibleValueTransformer: V, #defaultReverseTransformedValue: V.ReverseTransformResult.Value) -> ReversibleValueTransformer<AnyResult<V.ForwardTransformResult.Value?>, V.ReverseTransformResult> {
+    return combine(lift(toOptional: forward(reversibleValueTransformer)), lift(fromOptional: forward(flip(reversibleValueTransformer)), defaultTransformedValue: defaultReverseTransformedValue))
 }
 
-public func lift<V: ReversibleValueTransformerType where V.Input == V.ReverseTransformResult.Value>(toOptional reversibleValueTransformer: V, #defaultTransformedValue: V.TransformResult.Value) -> ReversibleValueTransformer<V.TransformResult, AnyResult<V.Input?>> {
-    return combine(lift(fromOptional: reversibleValueTransformer, defaultTransformedValue: defaultTransformedValue) as ValueTransformer, lift(toOptional: flip(reversibleValueTransformer)) as ValueTransformer)
+public func lift<V: ReversibleValueTransformerType>(toOptional reversibleValueTransformer: V, #defaultTransformedValue: V.ForwardTransformResult.Value) -> ReversibleValueTransformer<V.ForwardTransformResult, AnyResult<V.ReverseTransformResult.Value?>> {
+    return combine(lift(fromOptional: forward(reversibleValueTransformer), defaultTransformedValue: defaultTransformedValue), lift(toOptional: forward(flip(reversibleValueTransformer))))
 }
 
-public func lift<V: ReversibleValueTransformerType where V.Input == V.ReverseTransformResult.Value>(optionals reversibleValueTransformer: V) -> ReversibleValueTransformer<AnyResult<V.TransformResult.Value?>, AnyResult<V.ReverseTransformResult.Value?>> {
-    return combine(lift(optionals: reversibleValueTransformer) as ValueTransformer, lift(optionals: flip(reversibleValueTransformer)) as ValueTransformer)
+public func lift<V: ReversibleValueTransformerType>(optionals reversibleValueTransformer: V) -> ReversibleValueTransformer<AnyResult<V.ForwardTransformResult.Value?>, AnyResult<V.ReverseTransformResult.Value?>> {
+    return combine(lift(optionals: forward(reversibleValueTransformer)), lift(optionals: forward(flip(reversibleValueTransformer))))
 }
 
 // MARK: - Lift (Array)
@@ -106,14 +108,14 @@ public func lift<V: ValueTransformerType>(arrays valueTransformer: V) -> ValueTr
     return lift(collection: valueTransformer)
 }
 
-public func lift<V: ReversibleValueTransformerType, L: ResultType, LC: ExtensibleCollectionType, R: ResultType, RC: ExtensibleCollectionType where V.Input == V.ReverseTransformResult.Value, RC.Generator.Element == V.TransformResult.Value, LC.Generator.Element == V.ReverseTransformResult.Value, LC.Index.Distance: SignedIntegerType, RC.Index.Distance: SignedIntegerType, L.Value == RC, R.Value == LC>(collection reversibleValueTransformer: V) -> ReversibleValueTransformer<L, R> {
-    return combine(lift(collection: reversibleValueTransformer), lift(collection: flip(reversibleValueTransformer)))
+public func lift<V: ReversibleValueTransformerType, L: ResultType, LC: ExtensibleCollectionType, R: ResultType, RC: ExtensibleCollectionType where RC.Generator.Element == V.ForwardTransformResult.Value, LC.Generator.Element == V.ReverseTransformResult.Value, LC.Index.Distance: SignedIntegerType, RC.Index.Distance: SignedIntegerType, L.Value == RC, R.Value == LC>(collection reversibleValueTransformer: V) -> ReversibleValueTransformer<L, R> {
+    return combine(lift(collection: forward(reversibleValueTransformer)), lift(collection: forward(flip(reversibleValueTransformer))))
 }
 
-public func lift<V: ReversibleValueTransformerType, L: ResultType, LC: ExtensibleCollectionType, R: ResultType, RC: ExtensibleCollectionType where V.Input == V.ReverseTransformResult.Value, L.Value == Array<V.TransformResult.Value>, R.Value == Array<V.ReverseTransformResult.Value>>(toArray reversibleValueTransformer: V) -> ReversibleValueTransformer<L, R> {
+public func lift<V: ReversibleValueTransformerType, L: ResultType, LC: ExtensibleCollectionType, R: ResultType, RC: ExtensibleCollectionType where L.Value == Array<V.ForwardTransformResult.Value>, R.Value == Array<V.ReverseTransformResult.Value>>(toArray reversibleValueTransformer: V) -> ReversibleValueTransformer<L, R> {
     return lift(collection: reversibleValueTransformer)
 }
 
-public func lift<V: ReversibleValueTransformerType where V.Input == V.ReverseTransformResult.Value>(arrays reversibleValueTransformer: V) -> ReversibleValueTransformer<AnyResult<[V.TransformResult.Value]>, AnyResult<[V.ReverseTransformResult.Value]>> {
+public func lift<V: ReversibleValueTransformerType>(arrays reversibleValueTransformer: V) -> ReversibleValueTransformer<AnyResult<[V.ForwardTransformResult.Value]>, AnyResult<[V.ReverseTransformResult.Value]>> {
     return lift(collection: reversibleValueTransformer)
 }
