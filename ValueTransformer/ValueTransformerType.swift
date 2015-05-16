@@ -3,10 +3,10 @@
 import Lustre
 
 public protocol ValueTransformerType {
-    typealias Value
+    typealias Input
     typealias TransformResult: ResultType
 
-    func transform(value: Value) -> TransformResult
+    func transform(value: Input) -> TransformResult
 }
 
 // MARK: - Basics

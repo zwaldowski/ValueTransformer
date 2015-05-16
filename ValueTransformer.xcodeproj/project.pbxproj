@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DB729DDB1B07C5070082A2D4 /* Composition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB729DDA1B07C5070082A2D4 /* Composition.swift */; };
+		DB729DDC1B07C5070082A2D4 /* Composition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB729DDA1B07C5070082A2D4 /* Composition.swift */; };
 		DB7F5FEB1B00EEC900A4FFDD /* Lustre.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB7F5FEA1B00EEBC00A4FFDD /* Lustre.framework */; };
 		DB7F5FEC1B00EED500A4FFDD /* Lustre.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB7F5FEA1B00EEBC00A4FFDD /* Lustre.framework */; };
 		DB7F5FED1B00EEDD00A4FFDD /* Lustre.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB7F5FEA1B00EEBC00A4FFDD /* Lustre.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -84,6 +86,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DB729DDA1B07C5070082A2D4 /* Composition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Composition.swift; sourceTree = "<group>"; };
 		DB7F5FEA1B00EEBC00A4FFDD /* Lustre.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Lustre.framework; path = Carthage/Build/iOS/Lustre.framework; sourceTree = "<group>"; };
 		DB7F5FEE1B00EEEE00A4FFDD /* Lustre.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Lustre.framework; path = Carthage/Build/Mac/Lustre.framework; sourceTree = "<group>"; };
 		DC354FE21A952707009ACCFF /* ValueTransformer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ValueTransformer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -176,6 +179,7 @@
 				DC354FE71A952707009ACCFF /* ValueTransformer.h */,
 				DC35501C1A95277E009ACCFF /* ValueTransformer.swift */,
 				DC35502A1A952B12009ACCFF /* ValueTransformerType.swift */,
+				DB729DDA1B07C5070082A2D4 /* Composition.swift */,
 				DC354FE51A952707009ACCFF /* Supporting Files */,
 			);
 			path = ValueTransformer;
@@ -415,6 +419,7 @@
 				DC3550281A952ADF009ACCFF /* ReversibleValueTransformer.swift in Sources */,
 				DC35502B1A952B12009ACCFF /* ValueTransformerType.swift in Sources */,
 				DC35501D1A95277E009ACCFF /* ValueTransformer.swift in Sources */,
+				DB729DDB1B07C5070082A2D4 /* Composition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,6 +440,7 @@
 				DC3550291A952ADF009ACCFF /* ReversibleValueTransformer.swift in Sources */,
 				DC35502C1A952B12009ACCFF /* ValueTransformerType.swift in Sources */,
 				DC35501E1A95277E009ACCFF /* ValueTransformer.swift in Sources */,
+				DB729DDC1B07C5070082A2D4 /* Composition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

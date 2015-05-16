@@ -98,7 +98,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
 
         describe("Lifted reversible value transformers") {
             context("with optional value") {
-                let valueTransformer: ReversibleValueTransformer<String?, AnyResult<Int>, AnyResult<String?>> = lift(ReversibleValueTransformers.string, defaultTransformedValue: 0)
+                let valueTransformer = lift(toOptional: ReversibleValueTransformers.string, defaultTransformedValue: 0)
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -136,7 +136,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional transformed value") {
-                let valueTransformer: ReversibleValueTransformer<String, AnyResult<Int?>, AnyResult<String>> = lift(ReversibleValueTransformers.string, defaultReverseTransformedValue: "zero")
+                let valueTransformer = lift(fromOptional: ReversibleValueTransformers.string, defaultReverseTransformedValue: "zero")
 
                 it("should transform a value") {
                     let result = valueTransformer.transform("7")
@@ -174,7 +174,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional value and transformed value") {
-                let valueTransformer: ReversibleValueTransformer<String?, AnyResult<Int?>, AnyResult<String?>> = lift(ReversibleValueTransformers.string)
+                let valueTransformer = lift(optionals: ReversibleValueTransformers.string)
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -222,7 +222,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             }
 
             context("with array value and transformed value") {
-                let valueTransformer: ReversibleValueTransformer<[String], AnyResult<[Int]>, AnyResult<[String]>> = lift(ReversibleValueTransformers.string)
+                let valueTransformer = lift(arrays: ReversibleValueTransformers.string)
 
                 it("should transform a value") {
                     let result = valueTransformer.transform([ "11", "12" ])

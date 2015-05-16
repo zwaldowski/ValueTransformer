@@ -4,6 +4,7 @@ import Lustre
 
 public protocol ReversibleValueTransformerType: ValueTransformerType {
     typealias ReverseTransformResult: ResultType
+    typealias Input = ReverseTransformResult.Value
     
     func reverseTransform(transformedValue: TransformResult.Value) -> ReverseTransformResult
 }
