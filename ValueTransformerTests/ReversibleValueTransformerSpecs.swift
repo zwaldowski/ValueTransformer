@@ -16,13 +16,13 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             let valueTransformer = ReversibleValueTransformers.string
 
             it("should transform a value") {
-                let result = valueTransformer.transform("1")
+                let result = valueTransformer.forwardTransform("1")
 
                 expect(result.value).to(equal(1))
             }
 
             it("should fail if its value transformation fails") {
-                let result = valueTransformer.transform("1.5")
+                let result = valueTransformer.forwardTransform("1.5")
 
                 expect(result.value).to(beNil())
             }
@@ -44,13 +44,13 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             let valueTransformer = flip(ReversibleValueTransformers.string)
 
             it("should transform a value") {
-                let result = valueTransformer.transform(3)
+                let result = valueTransformer.forwardTransform(3)
 
                 expect(result.value).to(equal("3"))
             }
 
             it("should fail if its value transformation fails") {
-                let result = flip(valueTransformer).transform("3.5")
+                let result = flip(valueTransformer).forwardTransform("3.5")
 
                 expect(result.value).to(beNil())
             }
@@ -72,13 +72,13 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             let valueTransformer = ReversibleValueTransformers.string >>> flip(ReversibleValueTransformers.string)
 
             it("should transform a value") {
-                let result = valueTransformer.transform("3")
+                let result = valueTransformer.forwardTransform("3")
 
                 expect(result.value).to(equal("3"))
             }
 
             it("should fail if any of its value transformation fails") {
-                let result = valueTransformer.transform("3.5")
+                let result = valueTransformer.forwardTransform("3.5")
 
                 expect(result.value).to(beNil())
             }
@@ -102,13 +102,13 @@ class ReversibleValueTransformerSpecs: QuickSpec {
 
                 context("if given some value") {
                     it("should transform a value") {
-                        let result = valueTransformer.transform("5")
+                        let result = valueTransformer.forwardTransform("5")
 
                         expect(result.value).to(equal(5))
                     }
 
                     it("should fail if its value transformation fails") {
-                        let result = valueTransformer.transform("5.5")
+                        let result = valueTransformer.forwardTransform("5.5")
 
                         expect(result.value).to(beNil())
                     }
@@ -116,7 +116,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
 
                 context("if not given some value") {
                     it("should transform to the default transformed value") {
-                        let result = valueTransformer.transform(nil)
+                        let result = valueTransformer.forwardTransform(nil)
 
                         expect(result.value).to(equal(0))
                     }
@@ -139,13 +139,13 @@ class ReversibleValueTransformerSpecs: QuickSpec {
                 let valueTransformer = lift(fromOptional: ReversibleValueTransformers.string, defaultReverseTransformedValue: "zero")
 
                 it("should transform a value") {
-                    let result = valueTransformer.transform("7")
+                    let result = valueTransformer.forwardTransform("7")
 
                     expect(result.value!).to(equal(7))
                 }
 
                 it("should fail if its value transformation fails") {
-                    let result = valueTransformer.transform("7.5")
+                    let result = valueTransformer.forwardTransform("7.5")
 
                     expect(result.value).to(beNil())
                 }
@@ -178,13 +178,13 @@ class ReversibleValueTransformerSpecs: QuickSpec {
 
                 context("if given some value") {
                     it("should transform a value") {
-                        let result = valueTransformer.transform("9")
+                        let result = valueTransformer.forwardTransform("9")
 
                         expect(result.value!).to(equal(9))
                     }
 
                     it("should fail if its value transformation fails") {
-                        let result = valueTransformer.transform("9.5")
+                        let result = valueTransformer.forwardTransform("9.5")
 
                         expect(result.value).to(beNil())
                     }
@@ -192,7 +192,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
 
                 context("if not given some value") {
                     it("should transform to nil") {
-                        let result = valueTransformer.transform(nil)
+                        let result = valueTransformer.forwardTransform(nil)
 
                         expect(result.value!).to(beNil())
                     }
@@ -225,13 +225,13 @@ class ReversibleValueTransformerSpecs: QuickSpec {
                 let valueTransformer = lift(arrays: ReversibleValueTransformers.string)
 
                 it("should transform a value") {
-                    let result = valueTransformer.transform([ "11", "12" ])
+                    let result = valueTransformer.forwardTransform([ "11", "12" ])
 
                     expect(result.value).to(equal([ 11, 12 ]))
                 }
 
                 it("should fail if any of its value transformation fails") {
-                    let result = valueTransformer.transform([ "11", "12.5" ])
+                    let result = valueTransformer.forwardTransform([ "11", "12.5" ])
 
                     expect(result.value).to(beNil())
                 }
