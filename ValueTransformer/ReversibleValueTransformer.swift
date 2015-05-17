@@ -14,10 +14,6 @@ public struct ReversibleValueTransformer<ForwardResult: ResultType, ReverseResul
         self.reverseTransformClosure = reverseTransformClosure
     }
     
-    public func transform(value: ForwardInput) -> ForwardResult {
-        return transformClosure(value)
-    }
-    
     public func forwardTransform(value: ForwardInput) -> ForwardResult {
         return transformClosure(value)
     }
