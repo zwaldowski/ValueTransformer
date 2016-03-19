@@ -1,7 +1,5 @@
 //  Copyright (c) 2015 Felix Jendrusch. All rights reserved.
 
-import Result
-
 public protocol ReversibleValueTransformerType: ValueTransformerType {
     func reverseTransform(transformedValue: TransformedValue) throws -> OriginalValue
 }

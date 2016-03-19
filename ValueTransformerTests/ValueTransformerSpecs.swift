@@ -2,9 +2,7 @@
 
 import Quick
 import Nimble
-
-import Result
-import ValueTransformer
+@testable import ValueTransformer
 
 struct ValueTransformers {
     static let string = ValueTransformer<String, Int> { value in

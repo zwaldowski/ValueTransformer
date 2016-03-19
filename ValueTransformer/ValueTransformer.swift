@@ -1,7 +1,5 @@
 //  Copyright (c) 2015 Felix Jendrusch. All rights reserved.
 
-import Result
-
 public struct ValueTransformer<OriginalValue, TransformedValue>: ValueTransformerType {
     public typealias Transform = OriginalValue throws -> TransformedValue
 

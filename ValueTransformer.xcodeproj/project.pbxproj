@@ -7,12 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DC2B03AD1AD7BE490000DBA2 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC2B03A91AD7BE490000DBA2 /* Result.framework */; };
-		DC2B03B11AD7BEFF0000DBA2 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC2B03A91AD7BE490000DBA2 /* Result.framework */; };
-		DC2B03B51AD7BF030000DBA2 /* Result.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DC2B03A91AD7BE490000DBA2 /* Result.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DC2B03BD1AD7BF1D0000DBA2 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC2B03B91AD7BF1D0000DBA2 /* Result.framework */; };
-		DC2B03C11AD7BF330000DBA2 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC2B03B91AD7BF1D0000DBA2 /* Result.framework */; };
-		DC2B03C51AD7BF350000DBA2 /* Result.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DC2B03B91AD7BF1D0000DBA2 /* Result.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC354FE81A952707009ACCFF /* ValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = DC354FE71A952707009ACCFF /* ValueTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DC354FEE1A952707009ACCFF /* ValueTransformer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC354FE21A952707009ACCFF /* ValueTransformer.framework */; };
 		DC354FF51A952707009ACCFF /* ValueTransformerSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC354FF41A952707009ACCFF /* ValueTransformerSpecs.swift */; };
@@ -65,7 +59,6 @@
 			files = (
 				DCF63D391A9543EC005E6C21 /* Quick.framework in CopyFiles */,
 				DCF63D3A1A9543EC005E6C21 /* Nimble.framework in CopyFiles */,
-				DC2B03C51AD7BF350000DBA2 /* Result.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,15 +70,12 @@
 			files = (
 				DCF63D3B1A9543F5005E6C21 /* Quick.framework in CopyFiles */,
 				DCF63D3C1A9543F5005E6C21 /* Nimble.framework in CopyFiles */,
-				DC2B03B51AD7BF030000DBA2 /* Result.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		DC2B03A91AD7BE490000DBA2 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/iOS/Result.framework; sourceTree = "<group>"; };
-		DC2B03B91AD7BF1D0000DBA2 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/Mac/Result.framework; sourceTree = "<group>"; };
 		DC354FE21A952707009ACCFF /* ValueTransformer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ValueTransformer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC354FE61A952707009ACCFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DC354FE71A952707009ACCFF /* ValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ValueTransformer.h; sourceTree = "<group>"; };
@@ -110,7 +100,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC2B03AD1AD7BE490000DBA2 /* Result.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,7 +109,6 @@
 			files = (
 				DCF63D321A954365005E6C21 /* Quick.framework in Frameworks */,
 				DCF63D311A954365005E6C21 /* Nimble.framework in Frameworks */,
-				DC2B03B11AD7BEFF0000DBA2 /* Result.framework in Frameworks */,
 				DC354FEE1A952707009ACCFF /* ValueTransformer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,7 +117,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DC2B03BD1AD7BF1D0000DBA2 /* Result.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,7 +126,6 @@
 			files = (
 				DCF63D361A954389005E6C21 /* Quick.framework in Frameworks */,
 				DCF63D351A954389005E6C21 /* Nimble.framework in Frameworks */,
-				DC2B03C11AD7BF330000DBA2 /* Result.framework in Frameworks */,
 				DC9A894F1A9535E0003C48B1 /* ValueTransformer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,7 +207,6 @@
 			children = (
 				DCF63D341A954389005E6C21 /* Quick.framework */,
 				DCF63D331A954389005E6C21 /* Nimble.framework */,
-				DC2B03B91AD7BF1D0000DBA2 /* Result.framework */,
 			);
 			name = Mac;
 			sourceTree = "<group>";
@@ -231,7 +216,6 @@
 			children = (
 				DCF63D301A954365005E6C21 /* Quick.framework */,
 				DCF63D2F1A954365005E6C21 /* Nimble.framework */,
-				DC2B03A91AD7BE490000DBA2 /* Result.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";

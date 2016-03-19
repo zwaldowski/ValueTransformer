@@ -2,10 +2,7 @@
 
 import Quick
 import Nimble
-
-import Result
-import ValueTransformer
-
+@testable import ValueTransformer
 
 struct ReversibleValueTransformers {
     static let string = combine(ValueTransformers.string, ValueTransformers.int)

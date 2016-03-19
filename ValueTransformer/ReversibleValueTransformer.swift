@@ -1,7 +1,5 @@
 //  Copyright (c) 2015 Felix Jendrusch. All rights reserved.
 
-import Result
-
 public struct ReversibleValueTransformer<OriginalValue, TransformedValue>: ReversibleValueTransformerType {
     public typealias Transform = OriginalValue throws -> TransformedValue
     public typealias ReverseTransform = TransformedValue throws -> OriginalValue
