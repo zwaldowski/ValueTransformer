@@ -5,7 +5,7 @@ import Nimble
 @testable import ValueTransformer
 
 struct ReversibleValueTransformers {
-    static let string = combine(ValueTransformers.string, ValueTransformers.int)
+    static let string = ValueTransformers.string.combine(with: ValueTransformers.int)
 }
 
 class ReversibleValueTransformerSpecs: QuickSpec {
@@ -32,14 +32,14 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             }
 
             it("should fail if its reverse value transformation fails") {
-                let result = try? flip(valueTransformer).reverseTransform("2.5")
+                let result = try? valueTransformer.flip().reverseTransform("2.5")
 
                 expect(result).to(beNil())
             }
         }
 
         describe("A flipped ReversibleValueTransformer") {
-            let valueTransformer = flip(ReversibleValueTransformers.string)
+            let valueTransformer = ReversibleValueTransformers.string.flip()
 
             it("should transform a value") {
                 let result = try? valueTransformer.transform(3)
@@ -48,7 +48,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             }
 
             it("should fail if its value transformation fails") {
-                let result = try? flip(valueTransformer).transform("3.5")
+                let result = try? valueTransformer.flip().transform("3.5")
 
                 expect(result).to(beNil())
             }
@@ -67,7 +67,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
         }
 
         describe("Composed reversible value transformes") {
-            let valueTransformer = ReversibleValueTransformers.string >>> flip(ReversibleValueTransformers.string)
+            let valueTransformer = ReversibleValueTransformers.string >>> ReversibleValueTransformers.string.flip()
 
             it("should transform a value") {
                 let result = try? valueTransformer.transform("3")
@@ -96,7 +96,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
 
         describe("Lifted reversible value transformers") {
             context("with optional value") {
-                let valueTransformer: ReversibleValueTransformer<String?, Int> = lift(ReversibleValueTransformers.string, defaultTransformedValue: 0)
+                let valueTransformer: ReversibleValueTransformer<String?, Int> = ReversibleValueTransformers.string.lift(defaultTransformedValue: 0)
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -127,14 +127,14 @@ class ReversibleValueTransformerSpecs: QuickSpec {
                 }
 
                 it("should fail if its reverse value transformation fails") {
-                    let result = try? flip(valueTransformer).reverseTransform("6.5")
+                    let result = try? valueTransformer.flip().reverseTransform("6.5")
 
                     expect(result).to(beNil())
                 }
             }
 
             context("with optional transformed value") {
-                let valueTransformer: ReversibleValueTransformer<String, Int?> = lift(ReversibleValueTransformers.string, defaultReverseTransformedValue: "zero")
+                let valueTransformer: ReversibleValueTransformer<String, Int?> = ReversibleValueTransformers.string.lift(defaultReverseTransformedValue: "zero")
 
                 it("should transform a value") {
                     let result = try? valueTransformer.transform("7")
@@ -156,7 +156,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
                     }
 
                     it("should fail if its value transformation fails") {
-                        let result = try? flip(valueTransformer).reverseTransform("8.5")
+                        let result = try? valueTransformer.flip().reverseTransform("8.5")
 
                         expect(result).to(beNil())
                     }
@@ -172,7 +172,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional value and transformed value") {
-                let valueTransformer: ReversibleValueTransformer<String?, Int?> = lift(ReversibleValueTransformers.string)
+                let valueTransformer: ReversibleValueTransformer<String?, Int?> = ReversibleValueTransformers.string.lift()
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -204,7 +204,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
                     }
 
                     it("should fail if its value transformation fails") {
-                        let result = try? flip(valueTransformer).reverseTransform("10.5")
+                        let result = try? valueTransformer.flip().reverseTransform("10.5")
 
                         expect(result).to(beNil())
                     }
@@ -220,7 +220,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
             }
 
             context("with array value and transformed value") {
-                let valueTransformer: ReversibleValueTransformer<[String], [Int]> = lift(ReversibleValueTransformers.string)
+                let valueTransformer: ReversibleValueTransformer<[String], [Int]> = ReversibleValueTransformers.string.lift()
 
                 it("should transform a value") {
                     let result = try? valueTransformer.transform([ "11", "12" ])
@@ -241,7 +241,7 @@ class ReversibleValueTransformerSpecs: QuickSpec {
                 }
 
                 it("should fail if its reverse value transformation fails") {
-                    let result = try? flip(valueTransformer).reverseTransform([ "13", "14.5" ])
+                    let result = try? valueTransformer.flip().reverseTransform([ "13", "14.5" ])
                     
                     expect(result).to(beNil())
                 }

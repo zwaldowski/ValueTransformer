@@ -6,11 +6,12 @@ public protocol ReversibleValueTransformerType: ValueTransformerType {
 
 // MARK: - Basics
 
-@available(*, introduced=1.0, deprecated=2.1, message="Use valueTransformer.reverseTransform(transformedValue).")
+@available(*, unavailable, message="Use the 'reverseTransform(_:)' method on the transformer.")
 public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V, transformedValue: V.TransformedValue) throws -> V.OriginalValue {
-    return try reversibleValueTransformer.reverseTransform(transformedValue)
+    fatalError("unavailable function can't be called")
 }
 
+@available(*, unavailable, message="Use the 'reverseTransform(_:)' method on the transformer.")
 public func reverseTransform<V: ReversibleValueTransformerType>(reversibleValueTransformer: V) -> V.TransformedValue throws -> V.OriginalValue {
-    return reversibleValueTransformer.reverseTransform
+    fatalError("unavailable function can't be called")
 }

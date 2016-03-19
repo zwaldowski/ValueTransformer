@@ -53,7 +53,7 @@ class ValueTransformerSpecs: QuickSpec {
 
         describe("Lifted value transformers") {
             context("with optional value") {
-                let valueTransformer: ValueTransformer<String?, Int> = lift(ValueTransformers.string, defaultTransformedValue: 0)
+                let valueTransformer: ValueTransformer<String?, Int> = ValueTransformers.string.lift(defaultTransformedValue: 0)
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -79,7 +79,7 @@ class ValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional transformed value") {
-                let valueTransformer: ValueTransformer<String, Int?> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<String, Int?> = ValueTransformers.string.lift()
 
                 it("should transform a value") {
                     let result = try? valueTransformer.transform("5")
@@ -95,7 +95,7 @@ class ValueTransformerSpecs: QuickSpec {
             }
 
             context("with optional value and transformed value") {
-                let valueTransformer: ValueTransformer<String?, Int?> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<String?, Int?> = ValueTransformers.string.lift()
 
                 context("if given some value") {
                     it("should transform a value") {
@@ -121,7 +121,7 @@ class ValueTransformerSpecs: QuickSpec {
             }
 
             context("with array value and transformed value") {
-                let valueTransformer: ValueTransformer<[String], [Int]> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<[String], [Int]> = ValueTransformers.string.lift()
 
                 it("should transform a value") {
                     let result = try? valueTransformer.transform([ "7", "8" ])

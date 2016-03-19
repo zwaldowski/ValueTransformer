@@ -9,11 +9,12 @@ public protocol ValueTransformerType {
 
 // MARK: - Basics
 
-@available(*, introduced=1.0, deprecated=2.1, message="Use valueTransformer.transform(value).")
+@available(*, unavailable, message="Use the 'transform(_:)' method on the transformer.")
 public func transform<V: ValueTransformerType>(valueTransformer: V, value: V.OriginalValue) throws -> V.TransformedValue {
-    return try valueTransformer.transform(value)
+    fatalError("unavailable function can't be called")
 }
 
+@available(*, unavailable, message="Use the 'transform(_:)' method on the transformer.")
 public func transform<V: ValueTransformerType>(valueTransformer: V) -> V.OriginalValue throws -> V.TransformedValue {
-    return valueTransformer.transform
+    fatalError("unavailable function can't be called")
 }

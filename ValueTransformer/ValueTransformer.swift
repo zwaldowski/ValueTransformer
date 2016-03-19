@@ -22,10 +22,14 @@ extension ValueTransformer {
 
 // MARK: - Compose
 
-public func compose<V: ValueTransformerType, W: ValueTransformerType where V.TransformedValue == W.OriginalValue>(left: V, _ right: W) -> ValueTransformer<V.OriginalValue, W.TransformedValue> {
-    return ValueTransformer { value in
-        try right.transform(left.transform(value))
+extension ValueTransformerType {
+
+    public func compose<Other: ValueTransformerType where Other.OriginalValue == TransformedValue>(with other: Other) -> ValueTransformer<OriginalValue, Other.TransformedValue> {
+        return ValueTransformer { value in
+            try other.transform(self.transform(value))
+        }
     }
+
 }
 
 infix operator >>> {
@@ -34,7 +38,7 @@ infix operator >>> {
 }
 
 public func >>> <V: ValueTransformerType, W: ValueTransformerType where V.TransformedValue == W.OriginalValue>(lhs: V, rhs: W) -> ValueTransformer<V.OriginalValue, W.TransformedValue> {
-    return compose(lhs, rhs)
+    return lhs.compose(with: rhs)
 }
 
 infix operator <<< {
@@ -43,31 +47,64 @@ infix operator <<< {
 }
 
 public func <<< <V: ValueTransformerType, W: ValueTransformerType where V.OriginalValue == W.TransformedValue>(lhs: V, rhs: W) -> ValueTransformer<W.OriginalValue, V.TransformedValue> {
-    return compose(rhs, lhs)
+    return rhs.compose(with: lhs)
 }
 
 // MARK: - Lift (Optional)
 
-public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.OriginalValue, V.TransformedValue?> {
-    return ValueTransformer { value in
-        return try valueTransformer.transform(value)
-    }
-}
+extension ValueTransformerType {
 
-public func lift<V: ValueTransformerType>(valueTransformer: V, @autoclosure(escaping) defaultTransformedValue: () throws -> V.TransformedValue) -> ValueTransformer<V.OriginalValue?, V.TransformedValue> {
-    return ValueTransformer { value in
-        try value.map(valueTransformer.transform) ?? defaultTransformedValue()
+    public func lift() -> ValueTransformer<OriginalValue, TransformedValue?> {
+        return ValueTransformer(transformClosure: transform)
     }
-}
 
-public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.OriginalValue?, V.TransformedValue?> {
-    return lift(lift(valueTransformer), defaultTransformedValue: nil)
+    public func lift(@autoclosure(escaping) defaultTransformedValue defaultTransformedValue: () throws -> TransformedValue) -> ValueTransformer<OriginalValue?, TransformedValue> {
+        return ValueTransformer { value in
+            try value.map(self.transform) ?? defaultTransformedValue()
+        }
+    }
+
+    public func lift() -> ValueTransformer<OriginalValue?, TransformedValue?> {
+        return lift().lift(defaultTransformedValue: nil)
+    }
+    
 }
 
 // MARK: - Lift (Array)
 
-public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<[V.OriginalValue], [V.TransformedValue]> {
-    return ValueTransformer { values in
-        try values.map(valueTransformer.transform)
+extension ValueTransformerType {
+
+    public func lift() -> ValueTransformer<[OriginalValue], [TransformedValue]> {
+        return ValueTransformer { values in
+            try values.map(self.transform)
+        }
     }
+
+}
+
+// MARK: - Deprecated
+
+@available(*, unavailable, message="call the 'compose(with:)' method on the transformer")
+public func compose<V: ValueTransformerType, W: ValueTransformerType where V.TransformedValue == W.OriginalValue>(left: V, _ right: W) -> ValueTransformer<V.OriginalValue, W.TransformedValue> {
+    fatalError("unavailable function can't be called")
+}
+
+@available(*, unavailable, message="call the 'lift()' method on the transformer")
+public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.OriginalValue, V.TransformedValue?> {
+    fatalError("unavailable function can't be called")
+}
+
+@available(*, unavailable, message="call the 'lift(defaultTransformedValue:)' method on the transformer")
+public func lift<V: ValueTransformerType>(valueTransformer: V, @autoclosure(escaping) defaultTransformedValue: () throws -> V.TransformedValue) -> ValueTransformer<V.OriginalValue?, V.TransformedValue> {
+    fatalError("unavailable function can't be called")
+}
+
+@available(*, unavailable, message="call the 'lift()' method on the transformer")
+public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.OriginalValue?, V.TransformedValue?> {
+    fatalError("unavailable function can't be called")
+}
+
+@available(*, unavailable, message="call the 'lift()' method on the transformer")
+public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<[V.OriginalValue], [V.TransformedValue]> {
+    fatalError("unavailable function can't be called")
 }
