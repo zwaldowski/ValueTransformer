@@ -2,31 +2,31 @@
 
 import Result
 
-public struct ValueTransformer<Value, TransformedValue, Error: ErrorType>: ValueTransformerType {
-    private let transformClosure: Value -> Result<TransformedValue, Error>
+public struct ValueTransformer<OriginalValue, TransformedValue>: ValueTransformerType {
+    public typealias Transform = OriginalValue throws -> TransformedValue
 
-    public init(transformClosure: Value -> Result<TransformedValue, Error>) {
+    private let transformClosure: Transform
+
+    public init(transformClosure: Transform) {
         self.transformClosure = transformClosure
     }
 
-    public func transform(value: Value) -> Result<TransformedValue, Error> {
-        return transformClosure(value)
+    public func transform(value: OriginalValue) throws -> TransformedValue {
+        return try transformClosure(value)
     }
 }
 
 extension ValueTransformer {
-    public init<V: ValueTransformerType where V.ValueType == Value, V.TransformedValueType == TransformedValue, V.ErrorType == Error>(_ valueTransformer: V) {
-        self.init(transformClosure: { value in
-            return valueTransformer.transform(value)
-        })
+    public init<V: ValueTransformerType where V.OriginalValue == OriginalValue, V.TransformedValue == TransformedValue>(_ valueTransformer: V) {
+        self.init(transformClosure: valueTransformer.transform)
     }
 }
 
 // MARK: - Compose
 
-public func compose<V: ValueTransformerType, W: ValueTransformerType where V.TransformedValueType == W.ValueType, V.ErrorType == W.ErrorType>(left: V, _ right: W) -> ValueTransformer<V.ValueType, W.TransformedValueType, W.ErrorType> {
+public func compose<V: ValueTransformerType, W: ValueTransformerType where V.TransformedValue == W.OriginalValue>(left: V, _ right: W) -> ValueTransformer<V.OriginalValue, W.TransformedValue> {
     return ValueTransformer { value in
-        return left.transform(value).flatMap(transform(right))
+        try right.transform(left.transform(value))
     }
 }
 
@@ -35,7 +35,7 @@ infix operator >>> {
     precedence 170
 }
 
-public func >>> <V: ValueTransformerType, W: ValueTransformerType where V.TransformedValueType == W.ValueType, V.ErrorType == W.ErrorType>(lhs: V, rhs: W) -> ValueTransformer<V.ValueType, W.TransformedValueType, W.ErrorType> {
+public func >>> <V: ValueTransformerType, W: ValueTransformerType where V.TransformedValue == W.OriginalValue>(lhs: V, rhs: W) -> ValueTransformer<V.OriginalValue, W.TransformedValue> {
     return compose(lhs, rhs)
 }
 
@@ -44,40 +44,32 @@ infix operator <<< {
     precedence 170
 }
 
-public func <<< <V: ValueTransformerType, W: ValueTransformerType where V.ValueType == W.TransformedValueType, V.ErrorType == W.ErrorType>(lhs: V, rhs: W) -> ValueTransformer<W.ValueType, V.TransformedValueType, V.ErrorType> {
+public func <<< <V: ValueTransformerType, W: ValueTransformerType where V.OriginalValue == W.TransformedValue>(lhs: V, rhs: W) -> ValueTransformer<W.OriginalValue, V.TransformedValue> {
     return compose(rhs, lhs)
 }
 
 // MARK: - Lift (Optional)
 
-public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.ValueType, V.TransformedValueType?, V.ErrorType> {
+public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.OriginalValue, V.TransformedValue?> {
     return ValueTransformer { value in
-        return valueTransformer.transform(value).map { value in
-            return .Some(value)
-        }
+        return try valueTransformer.transform(value)
     }
 }
 
-public func lift<V: ValueTransformerType>(valueTransformer: V, defaultTransformedValue: V.TransformedValueType) -> ValueTransformer<V.ValueType?, V.TransformedValueType, V.ErrorType> {
+public func lift<V: ValueTransformerType>(valueTransformer: V, @autoclosure(escaping) defaultTransformedValue: () throws -> V.TransformedValue) -> ValueTransformer<V.OriginalValue?, V.TransformedValue> {
     return ValueTransformer { value in
-        return value.map(transform(valueTransformer)) ?? Result.Success(defaultTransformedValue)
+        try value.map(valueTransformer.transform) ?? defaultTransformedValue()
     }
 }
 
-public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.ValueType?, V.TransformedValueType?, V.ErrorType> {
+public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<V.OriginalValue?, V.TransformedValue?> {
     return lift(lift(valueTransformer), defaultTransformedValue: nil)
 }
 
 // MARK: - Lift (Array)
 
-public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<[V.ValueType], [V.TransformedValueType], V.ErrorType> {
+public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<[V.OriginalValue], [V.TransformedValue]> {
     return ValueTransformer { values in
-        return values.reduce(Result.Success([])) { (result, value) in
-            return result.flatMap { result in
-                return valueTransformer.transform(value).map { value in
-                    return result + [ value ]
-                }
-            }
-        }
+        try values.map(valueTransformer.transform)
     }
 }

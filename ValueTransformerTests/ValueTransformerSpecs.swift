@@ -7,16 +7,15 @@ import Result
 import ValueTransformer
 
 struct ValueTransformers {
-    static let string = ValueTransformer<String, Int, NSError> { value in
-        if let value = Int(value) {
-            return Result.Success(value)
-        } else {
-            return Result.Failure(NSError(domain: "ValueTransformer", code: 0, userInfo: nil))
+    static let string = ValueTransformer<String, Int> { value in
+        guard let value = Int(value) else {
+            throw NSError(domain: "ValueTransformer", code: 0, userInfo: nil)
         }
+        return value
     }
 
-    static let int = ValueTransformer<Int, String, NSError> { value in
-        return Result.Success(String(value))
+    static let int = ValueTransformer<Int, String> { value in
+        String(value)
     }
 }
 
@@ -26,15 +25,15 @@ class ValueTransformerSpecs: QuickSpec {
             let valueTransformer = ValueTransformers.string
 
             it("should transform a value") {
-                let result = valueTransformer.transform("1")
+                let result = try? valueTransformer.transform("1")
 
-                expect(result.value).to(equal(1))
+                expect(result) == 1
             }
 
             it("should fail if its value transformation fails") {
-                let result = valueTransformer.transform("2.5")
+                let result = try? valueTransformer.transform("2.5")
 
-                expect(result.value).to(beNil())
+                expect(result).to(beNil())
             }
         }
 
@@ -42,100 +41,100 @@ class ValueTransformerSpecs: QuickSpec {
             let valueTransformer = ValueTransformers.string >>> ValueTransformers.int
 
             it("should transform a value") {
-                let result = valueTransformer.transform("3")
+                let result = try? valueTransformer.transform("3")
 
-                expect(result.value).to(equal("3"))
+                expect(result) == "3"
             }
 
             it("should fail if any of its value transformation fails") {
-                let result = valueTransformer.transform("3.5")
+                let result = try? valueTransformer.transform("3.5")
 
-                expect(result.value).to(beNil())
+                expect(result).to(beNil())
             }
         }
 
         describe("Lifted value transformers") {
             context("with optional value") {
-                let valueTransformer: ValueTransformer<String?, Int, NSError> = lift(ValueTransformers.string, defaultTransformedValue: 0)
+                let valueTransformer: ValueTransformer<String?, Int> = lift(ValueTransformers.string, defaultTransformedValue: 0)
 
                 context("if given some value") {
                     it("should transform a value") {
-                        let result = valueTransformer.transform("4")
+                        let result = try? valueTransformer.transform("4")
 
-                        expect(result.value).to(equal(4))
+                        expect(result) == 4
                     }
 
                     it("should fail if its value transformation fails") {
-                        let result = valueTransformer.transform("4.5")
+                        let result = try? valueTransformer.transform("4.5")
 
-                        expect(result.value).to(beNil())
+                        expect(result).to(beNil())
                     }
                 }
 
                 context("if not given some value") {
                     it("should transform to the default transformed value") {
-                        let result = valueTransformer.transform(nil)
+                        let result = try? valueTransformer.transform(nil)
 
-                        expect(result.value).to(equal(0))
+                        expect(result) == 0
                     }
                 }
             }
 
             context("with optional transformed value") {
-                let valueTransformer: ValueTransformer<String, Int?, NSError> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<String, Int?> = lift(ValueTransformers.string)
 
                 it("should transform a value") {
-                    let result = valueTransformer.transform("5")
+                    let result = try? valueTransformer.transform("5")
 
-                    expect(result.value!).to(equal(5))
+                    expect(result!) == 5
                 }
 
                 it("should fail if its value transformation fails") {
-                    let result = valueTransformer.transform("5.5")
+                    let result = try? valueTransformer.transform("5.5")
 
-                    expect(result.value).to(beNil())
+                    expect(result).to(beNil())
                 }
             }
 
             context("with optional value and transformed value") {
-                let valueTransformer: ValueTransformer<String?, Int?, NSError> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<String?, Int?> = lift(ValueTransformers.string)
 
                 context("if given some value") {
                     it("should transform a value") {
-                        let result = valueTransformer.transform("6")
+                        let result = try? valueTransformer.transform("6")
 
-                        expect(result.value!).to(equal(6))
+                        expect(result!) == 6
                     }
 
                     it("should fail if its value transformation fails") {
-                        let result = valueTransformer.transform("6.5")
+                        let result = try? valueTransformer.transform("6.5")
 
-                        expect(result.value).to(beNil())
+                        expect(result).to(beNil())
                     }
                 }
 
                 context("if not given some value") {
                     it("should transform to nil") {
-                        let result = valueTransformer.transform(nil)
+                        let result = try? valueTransformer.transform(nil)
 
-                        expect(result.value!).to(beNil())
+                        expect(result!).to(beNil())
                     }
                 }
             }
 
             context("with array value and transformed value") {
-                let valueTransformer: ValueTransformer<[String], [Int], NSError> = lift(ValueTransformers.string)
+                let valueTransformer: ValueTransformer<[String], [Int]> = lift(ValueTransformers.string)
 
                 it("should transform a value") {
-                    let result = valueTransformer.transform([ "7", "8" ])
+                    let result = try? valueTransformer.transform([ "7", "8" ])
 
-                    expect(result.value).to(equal([ 7, 8 ]))
+                    expect(result) == [ 7, 8 ]
                 }
 
                 it("should fail if any of its value transformation fails") {
-                    let result = valueTransformer.transform([ "9", "9.5" ])
+                    let result = try? valueTransformer.transform([ "9", "9.5" ])
 
-                    expect(result.value).to(beNil())
+                    expect(result).to(beNil())
                 }
             }
         }
