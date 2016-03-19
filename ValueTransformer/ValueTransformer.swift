@@ -2,7 +2,7 @@
 
 import Result
 
-public struct ValueTransformer<Value, TransformedValue, Error>: ValueTransformerType {
+public struct ValueTransformer<Value, TransformedValue, Error: ErrorType>: ValueTransformerType {
     private let transformClosure: Value -> Result<TransformedValue, Error>
 
     public init(transformClosure: Value -> Result<TransformedValue, Error>) {
@@ -60,7 +60,7 @@ public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransform
 
 public func lift<V: ValueTransformerType>(valueTransformer: V, defaultTransformedValue: V.TransformedValueType) -> ValueTransformer<V.ValueType?, V.TransformedValueType, V.ErrorType> {
     return ValueTransformer { value in
-        return value.map(transform(valueTransformer)) ?? Result.success(defaultTransformedValue)
+        return value.map(transform(valueTransformer)) ?? Result.Success(defaultTransformedValue)
     }
 }
 
@@ -72,7 +72,7 @@ public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransform
 
 public func lift<V: ValueTransformerType>(valueTransformer: V) -> ValueTransformer<[V.ValueType], [V.TransformedValueType], V.ErrorType> {
     return ValueTransformer { values in
-        return values.reduce(Result.success([])) { (result, value) in
+        return values.reduce(Result.Success([])) { (result, value) in
             return result.flatMap { result in
                 return valueTransformer.transform(value).map { value in
                     return result + [ value ]

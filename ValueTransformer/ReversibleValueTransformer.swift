@@ -2,7 +2,7 @@
 
 import Result
 
-public struct ReversibleValueTransformer<Value, TransformedValue, Error>: ReversibleValueTransformerType {
+public struct ReversibleValueTransformer<Value, TransformedValue, Error: ErrorType>: ReversibleValueTransformerType {
     private let transformClosure: Value -> Result<TransformedValue, Error>
     private let reverseTransformClosure: TransformedValue -> Result<Value, Error>
 

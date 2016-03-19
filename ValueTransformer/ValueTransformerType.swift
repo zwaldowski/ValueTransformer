@@ -5,7 +5,7 @@ import Result
 public protocol ValueTransformerType {
     typealias ValueType
     typealias TransformedValueType
-    typealias ErrorType
+    typealias ErrorType: Swift.ErrorType
 
     func transform(value: ValueType) -> Result<TransformedValueType, ErrorType>
 }
