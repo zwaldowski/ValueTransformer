@@ -1,8 +1,8 @@
 //  Copyright (c) 2015 Felix Jendrusch. All rights reserved.
 
 public protocol ValueTransformerType {
-    typealias OriginalValue
-    typealias TransformedValue
+    associatedtype OriginalValue
+    associatedtype TransformedValue
 
     func transform(value: OriginalValue) throws -> TransformedValue
 }
